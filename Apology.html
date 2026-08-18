@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Romina — A Special Experience</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a0813, #380b22, #1f0010);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      padding: 20px;
+      overflow-x: hidden;
+      transition: background 0.8s ease;
+    }
+
+    body.soft-mode {
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      color: #333;
+    }
+
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      user-select: none;
+      animation: floatUp 8s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      z-index: 10;
+      position: relative;
+      transition: all 0.5s ease;
+    }
+
+    body.soft-mode .container {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .top-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .icon-btn {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: currentColor;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.05);
+    }
+
+    #envelope-screen {
+      text-align: center;
+      padding: 40px 10px;
+      cursor: pointer;
+    }
+
+    .seal-btn {
+      width: 90px;
+      height: 90px;
+      background: #e63946;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 0 25px rgba(230, 57, 70, 0.6);
+      transition: transform 0.3s ease;
+      animation: glowPulse 2s infinite;
+    }
+
+    .seal-btn:hover {
+      transform: scale(1.15);
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(230, 57, 70, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(230, 57, 70, 0.9); }
+    }
+
+    .typewriter-box {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      min-height: 90px;
+      margin: 20px 0;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    body.soft-mode .typewriter-box {
+      background: rgba(255, 255, 255, 0.6);
+      border-color: rgba(0,0,0,0.1);
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .story-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #ff758f;
+      transition: all 0.2s ease;
+    }
+
+    .story-card.active, .story-card:hover {
+      background: #ff4d6d;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .photo-card {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.5rem;
+      border: 1px dashed rgba(255,255,255,0.3);
+      transition: all 0.3s;
+      text-align: center;
+      padding: 5px;
+    }
+
+    .photo-card.revealed {
+      background: rgba(255, 77, 109, 0.2);
+      border: 1px solid #ff4d6d;
+      font-size: 0.85rem;
+      color: #fff;
+    }
+
+    body.soft-mode .photo-card.revealed {
+      color: #333;
+    }
+
+    .slider-box {
+      background: rgba(0,0,0,0.3);
+      padding: 18px;
+      border-radius: 15px;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .slider-box input[type=range] {
+      width: 100%;
+      margin: 12px 0;
+      accent-color: #ff4d6d;
+      cursor: pointer;
+    }
+
+    .quiz-box {
+      background: rgba(0,0,0,0.2);
+      border-radius: 15px;
+      padding: 18px;
+      margin: 20px 0;
+    }
+
+    .quiz-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: currentColor;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .quiz-btn:hover {
+      background: rgba(255, 77, 109, 0.4);
+    }
+
+    .promise-list {
+      background: rgba(0,0,0,0.2);
+      border-radius: 15px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .promise-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid #ff758f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .promise-item.active .checkbox-icon {
+      background: #ff758f;
+      color: white;
+    }
+
+    .final-action {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .forgive-btn {
+      background: linear-gradient(135deg, #ff4d6d, #c9184a);
+      color: white;
+      border: none;
+      padding: 16px 40px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      border-radius: 35px;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(255, 77, 109, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .forgive-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 45px rgba(255, 77, 109, 0.8);
+    }
+
+    #success-screen {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+      animation: fadeIn 0.8s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .audio-player-card {
+      background: rgba(255, 77, 109, 0.2);
+      border: 1px solid #ff4d6d;
+      border-radius: 15px;
+      padding: 15px;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    h1 {
+      color: #ff758f;
+      margin-bottom: 10px;
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    p.paragraph {
+      line-height: 1.7;
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="particle-container"></div>
+
+  <div class="container">
+    
+    <div class="top-toolbar">
+      <button class="icon-btn" onclick="toggleTheme()">✨ Switch Theme</button>
+      <button class="icon-btn" id="musicToggleBtn" onclick="toggleSynthSong()" style="display:none;">🎵 Music: Off</button>
+    </div>
+
+    <div id="envelope-screen" onclick="unlockLetter()">
+      <div class="seal-btn">✉️</div>
+      <h1>For Romina</h1>
+      <p style="opacity: 0.8; margin-top: 8px; font-size: 0.95rem;">Tap the wax seal to enter</p>
+    </div>
+
+    <div id="main-content" style="display: none;">
+      <h1>Dearest Romina,</h1>
+      
+      <div class="typewriter-box" id="typewriter"></div>
+
+      <div style="font-size: 0.85rem; color: #ff758f; font-weight: bold; margin-top: 15px;">1. TAP THROUGH MY THOUGHTS</div>
+      <div class="story-grid">
+        <div class="story-card active" onclick="showStory(1, this)">My Regret</div>
+        <div class="story-card" onclick="showStory(2, this)">My Realization</div>
+        <div class="story-card" onclick="showStory(3, this)">My Plea</div>
+        <div class="story-card" onclick="showStory(4, this)">Our Future</div>
+      </div>
+
+      <div style="font-size: 0.85rem; color: #ff758f; font-weight: bold; margin-top: 20px;">2. TAP TO REVEAL 3 REMINDERS</div>
+      <div class="photo-grid">
+        <div class="photo-card" onclick="revealPhoto(this, 'Your Smile Lightens My World 🌸')">❓ Card 1</div>
+        <div class="photo-card" onclick="revealPhoto(this, 'I Respect You Deeply 🤍')">❓ Card 2</div>
+        <div class="photo-card" onclick="revealPhoto(this, 'I Will Never Take You For Granted 💖')">❓ Card 3</div>
+      </div>
+
+      <div class="slider-box">
+        <div style="font-size: 0.85rem; color: #ff758f; font-weight: bold;">3. ADJUST TO MEASURE MY SORROW</div>
+        <input type="range" id="regretSlider" min="0" max="100" value="30" oninput="updateSlider(this.value)">
+        <div id="sliderOutput" style="font-size: 0.9rem; margin-top: 5px;">Level: 30%</div>
+      </div>
+
+      <div class="quiz-box">
+        <div style="font-size: 0.85rem; color: #ff758f; font-weight: bold; margin-bottom: 10px;">4. QUICK QUESTION FOR YOU:</div>
+        <div style="font-size: 0.95rem; margin-bottom: 10px;">What is the most important thing I should do right now?</div>
+        <button class="quiz-btn" onclick="answerQuiz(this, 'Correct! I am listening and taking full accountability.')">A) Listen quietly and understand your feelings entirely.</button>
+        <button class="quiz-btn" onclick="answerQuiz(this, 'Correct! I promise to show you through action every day.')">B) Prove my love through continuous care and respect.</button>
+        <div id="quizResponse" style="margin-top: 10px; font-weight: bold; color: #ff758f; display: none;"></div>
+      </div>
+
+      <div class="promise-list">
+        <div style="font-size: 0.85rem; color: #ff758f; font-weight: bold; margin-bottom: 10px;">5. UNLOCK MY COMMITMENTS TO YOU</div>
+        
+        <div class="promise-item" onclick="togglePromise(this)">
+          <div class="checkbox-icon">✓</div>
+          <p style="font-size: 0.9rem;">I promise to communicate with warmth and tenderness always.</p>
+        </div>
+        
+        <div class="promise-item" onclick="togglePromise(this)">
+          <div class="checkbox-icon">✓</div>
+          <p style="font-size: 0.9rem;">I promise to respect your boundaries and cherish your feelings.</p>
+        </div>
+
+        <div class="promise-item" onclick="togglePromise(this)">
+          <div class="checkbox-icon">✓</div>
+          <p style="font-size: 0.9rem;">I promise to spend every day proving how much you mean to me.</p>
+        </div>
+      </div>
+
+      <div class="final-action">
+        <p style="margin-bottom: 15px; font-weight: bold;">Romina, if you are ready to forgive me, click below:</p>
+        <button class="forgive-btn" onclick="forgiveAction()">"I Forgive You" ❤️</button>
+      </div>
+    </div>
+
+    <div id="success-screen">
+      <div style="font-size: 60px; margin-bottom: 15px;">💖✨</div>
+      <h1>Thank You, Romina!</h1>
+      <p class="paragraph">
+        Your forgiveness means more to me than words can say. I am turning over a new leaf right now to show you the deep love and care you deserve.
+      </p>
+
+      <div class="audio-player-card">
+        <div>
+          <div style="font-weight: bold; font-size: 0.95rem;">🎵 Playing Love Melody...</div>
+          <div style="font-size: 0.8rem; opacity: 0.85;">"Can't Help Falling in Love"</div>
+        </div>
+        <button class="icon-btn" onclick="toggleSynthSong()">Pause / Play 🎵</button>
+      </div>
+
+      <p class="paragraph" style="color: #ff758f; font-weight: bold; font-size: 1.1rem; margin-top: 25px;">
+        I will never make you feel hurt again!
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    // Web Audio Synthesizer Engine for "Can't Help Falling in Love"
+    let audioCtx = null;
+    let isPlaying = false;
+    let songTimeout = null;
+
+    const notes = {
+      C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+      C5: 523.25, D5: 587.33, E5: 659.25
+    };
+
+    // "Can't Help Falling in Love" Melody Sequence
+    const melody = [
+      { note: 'C4', duration: 0.8 },
+      { note: 'G4', duration: 0.8 },
+      { note: 'C5', duration: 0.8 },
+      { note: 'C5', duration: 0.4 },
+      { note: 'D5', duration: 0.4 },
+      { note: 'E5', duration: 0.8 },
+      { note: 'D5', duration: 0.4 },
+      { note: 'C5', duration: 0.4 },
+      { note: 'D5', duration: 1.2 },
+      { note: 'C4', duration: 0.4 },
+      { note: 'D4', duration: 0.4 },
+      { note: 'E4', duration: 0.8 },
+      { note: 'F4', duration: 0.8 },
+      { note: 'G4', duration: 0.8 },
+      { note: 'F4', duration: 0.4 },
+      { note: 'E4', duration: 0.4 },
+      { note: 'D4', duration: 1.2 }
+    ];
+
+    function playNote(freq, duration) {
+      if (!audioCtx || !isPlaying) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      gain.gain.setValueAtTime(0, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playMelodySequence(index = 0) {
+      if (!isPlaying) return;
+      if (index >= melody.length) index = 0;
+
+      const item = melody[index];
+      if (notes[item.note]) {
+        playNote(notes[item.note], item.duration);
+      }
+
+      songTimeout = setTimeout(() => {
+        playMelodySequence(index + 1);
+      }, item.duration * 1000);
+    }
+
+    function startSynthSong() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      isPlaying = true;
+      document.getElementById('musicToggleBtn').innerText = "🎵 Song: Playing";
+      playMelodySequence(0);
+    }
+
+    function toggleSynthSong() {
+      if (isPlaying) {
+        isPlaying = false;
+        clearTimeout(songTimeout);
+        document.getElementById('musicToggleBtn').innerText = "🎵 Song: Paused";
+      } else {
+        startSynthSong();
+      }
+    }
+
+    const typewriterText = "Romina, I created this interactive page because a simple apology wouldn't show how deeply sorry I am. Whatever I said that hurt you was a mistake. Please interact with everything below...";
+    let typeIdx = 0;
+
+    function startTypewriter() {
+      if (typeIdx < typewriterText.length) {
+        document.getElementById("typewriter").innerHTML += typewriterText.charAt(typeIdx);
+        typeIdx++;
+        setTimeout(startTypewriter, 35);
+      }
+    }
+
+    function unlockLetter() {
+      document.getElementById('envelope-screen').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+      document.getElementById('musicToggleBtn').style.display = 'inline-block';
+      startTypewriter();
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('soft-mode');
+    }
+
+    const storyMessages = {
+      1: "I am deeply sorry for speaking thoughtlessly. Taking responsibility is my absolute priority.",
+      2: "I realized how precious your peace of mind is. Hurting you is something I regret with all my heart.",
+      3: "Please stay with me, Romina. Let me demonstrate how much better I can care for your heart.",
+      4: "I want to build a safe, respectful, and joyful future with you step by step."
+    };
+
+    function showStory(step, cardElement) {
+      document.querySelectorAll('.story-card').forEach(c => c.classList.remove('active'));
+      cardElement.classList.add('active');
+      document.getElementById('typewriter').innerText = storyMessages[step];
+    }
+
+    function revealPhoto(card, message) {
+      card.classList.add('revealed');
+      card.innerText = message;
+    }
+
+    function updateSlider(val) {
+      const output = document.getElementById('sliderOutput');
+      if (val < 50) {
+        output.innerText = 'Level: ' + val + '%';
+      } else if (val < 100) {
+        output.innerText = 'Level: ' + val + '% — I feel genuinely awful...';
+      } else {
+        output.innerText = 'Level: 100% — My entire heart belongs to you, Romina!';
+      }
+    }
+
+    function answerQuiz(btn, text) {
+      const resp = document.getElementById('quizResponse');
+      resp.style.display = 'block';
+      resp.innerText = text;
+    }
+
+    function togglePromise(item) {
+      item.classList.toggle('active');
+    }
+
+    function forgiveAction() {
+      document.getElementById('main-content').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+      
+      startSynthSong();
+
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+
+      triggerHeartShower();
+    }
+
+    function createParticle() {
+      const container = document.getElementById('particle-container');
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      
+      const icons = ['🌸', '✨', '💖', '🌺', '💕'];
+      particle.innerText = icons[Math.floor(Math.random() * icons.length)];
+      
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.fontSize = (Math.random() * 15 + 15) + 'px';
+      particle.style.animationDuration = (Math.random() * 4 + 5) + 's';
+      
+      container.appendChild(particle);
+      setTimeout(() => particle.remove(), 8000);
+    }
+    setInterval(createParticle, 400);
+
+    function triggerHeartShower() {
+      for (let i = 0; i < 40; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.classList.add('particle');
+          heart.innerText = '❤️';
+          heart.style.left = Math.random() * 100 + 'vw';
+          heart.style.fontSize = (Math.random() * 25 + 20) + 'px';
+          heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          document.body.appendChild(heart);
+        }, i * 40);
+      }
+    }
+  </script>
+</body>
+</html>
